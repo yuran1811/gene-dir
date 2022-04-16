@@ -97,13 +97,12 @@ let template;
 	}
 
 	if (genTp) {
-		const newDir = dirPath(__dirname, '..');
-		const tpDir = dirPath(newDir, '__template.cpp');
+		const tpDir = dirPath(process.cwd(), '__template.cpp');
 
 		if (!fs.existsSync(tpDir))
 			fs.writeFileSync(tpDir, cppDefault('template'));
 
-		fs.copyFileSync(tpDir, dirPath(newDir, name, `${name}.cpp`));
+		fs.copyFileSync(tpDir, dirPath(process.cwd(), name, `${name}.cpp`));
 	}
 
 	console.log(`\nSuccessfully!`);
