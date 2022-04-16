@@ -3,7 +3,7 @@
 ## Usage
 
 ```cmd
-npx gen-dir -n new-folder -o f
+npx gene-dir -n new-folder -o f
 ```
 
 -   -n: folder's name
