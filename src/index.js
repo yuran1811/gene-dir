@@ -1,25 +1,27 @@
 #! /usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
 const inquirer = require('inquirer');
 const { program } = require('commander');
 const templates = require('./templates');
 const genOpts = require('./geneOptions');
 const { cppDefault, dirPath } = require('./utils/default.js');
+const { _fs } = require('./utils/fsHandle.js');
 
 program
 	.option('-n <name>', `Folder's name`)
-	.option('-t', 'Use custom template')
-	.option('-o, <option>', 'Gene with options');
+	.option('-tp, <file>', 'Use custom template')
+	.option('-o, <option>', 'Gene with options')
+	.option('-t, <template>', 'Gene with templates');
 program.parse();
 
 const cmdOpts = program.opts();
 
 let name = cmdOpts.n || '';
-let genTp = cmdOpts.t || null;
+let genUseTp = cmdOpts.Tp || null;
 let genOpt = cmdOpts.o || '';
-let template;
+let genFromTp = cmdOpts.t || '';
+
+console.log(cmdOpts);
 
 (async () => {
 	// Config folder's name
@@ -36,36 +38,33 @@ let template;
 
 	const directory = dirPath(process.cwd(), name);
 
-	// If directory is not empty => clear all items
-	if (fs.existsSync(directory) && fs.readdirSync(directory).length > 0) {
+	if (_fs.dir.exist(directory) && _fs.dir.read(directory).length > 0) {
 		const { rmFile } = await inquirer.prompt({
 			name: 'rmFile',
 			type: 'confirm',
+
 			message:
 				'Directory is not empty. Remove existing files and continue?',
 		});
 
-		if (rmFile) {
-			fs.rmSync(directory, { recursive: true, force: true });
-		} else {
-			process.exit(1);
-		}
+		if (rmFile) _fs.dir.rd(directory);
+		else process.exit(1);
 	}
-	fs.mkdirSync(directory);
+	if (!_fs.dir.exist(directory)) _fs.dir.md(directory);
 
 	// Config template
-	if (!template) {
-		template = (
+	if (!genFromTp) {
+		genFromTp = (
 			await inquirer.prompt({
-				name: 'template',
+				name: 'genFromTp',
 				type: 'list',
 				message: 'Choose a template:',
-				choices: Object.values(templates).map((_) => _.name),
+				choices: Object.values(templates).map((_) => _.desc),
 			})
-		).template;
+		).genFromTp;
 	}
 	const templateId = Object.entries(templates).find(
-		([key, val]) => val.name === template
+		([key, val]) => genFromTp == key || val.desc === genFromTp
 	)[0];
 	templates[templateId].initial(directory, name);
 
@@ -86,23 +85,22 @@ let template;
 	});
 
 	// Config gene use custom template
-	if (genTp === null) {
-		genTp = (
+	if (genUseTp === null) {
+		genUseTp = (
 			await inquirer.prompt({
-				name: 'genTp',
-				type: 'confirm',
+				name: 'genUseTp',
+				type: 'input',
 				message: 'Gene from custom template ?',
 			})
-		).genTp;
+		).genUseTp;
 	}
 
-	if (genTp) {
-		const tpDir = dirPath(process.cwd(), '__template.cpp');
+	if (!!genUseTp) {
+		const tpDir = dirPath(process.cwd(), `${genUseTp}.cpp`);
 
-		if (!fs.existsSync(tpDir))
-			fs.writeFileSync(tpDir, cppDefault('template'));
+		if (!_fs.dir.exist(tpDir)) _fs.f.write(tpDir, cppDefault(genUseTp));
 
-		fs.copyFileSync(tpDir, dirPath(process.cwd(), name, `${name}.cpp`));
+		_fs.f.copy(tpDir, dirPath(process.cwd(), name, `${name}.cpp`));
 	}
 
 	console.log(`\nSuccessfully!`);
