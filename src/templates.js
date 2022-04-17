@@ -6,7 +6,7 @@ const updateFiles = (directory, files) => {
 		_fs.f.rm(dirPath(directory, file));
 	});
 
-	Object.entries(files.write).map(([key, value]) => {
+	Object.entries(files.write).forEach(([key, value]) => {
 		_fs.f.write(dirPath(directory, key), value, { encoding: 'utf-8' });
 	});
 };

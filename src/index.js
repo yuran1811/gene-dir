@@ -4,6 +4,7 @@ const inquirer = require('inquirer');
 const { program } = require('commander');
 const templates = require('./templates');
 const genOpts = require('./geneOptions');
+const extraOpts = require('./extraOptions');
 const { cppDefault, dirPath } = require('./utils/default.js');
 const { _fs } = require('./utils/fsHandle.js');
 
@@ -11,7 +12,8 @@ program
 	.option('-n <name>', `Folder's name`)
 	.option('-tp, <file>', 'Use custom template')
 	.option('-o, <option>', 'Gene with options')
-	.option('-t, <template>', 'Gene with templates');
+	.option('-t, <template>', 'Gene with templates')
+	.option('-y', 'Finish');
 program.parse();
 
 const cmdOpts = program.opts();
@@ -20,8 +22,7 @@ let name = cmdOpts.n || '';
 let genUseTp = cmdOpts.Tp || null;
 let genOpt = cmdOpts.o || '';
 let genFromTp = cmdOpts.t || '';
-
-console.log(cmdOpts);
+let genFinish = cmdOpts.y || 0;
 
 (async () => {
 	// Config folder's name
@@ -101,6 +102,19 @@ console.log(cmdOpts);
 		if (!_fs.dir.exist(tpDir)) _fs.f.write(tpDir, cppDefault(genUseTp));
 
 		_fs.f.copy(tpDir, dirPath(process.cwd(), name, `${name}.cpp`));
+	}
+
+	// Extra Options
+	if (!genFinish) {
+		const { extras } = await inquirer.prompt({
+			name: 'extras',
+			type: 'checkbox',
+			message: 'Gene extra files',
+			choices: Object.entries(extraOpts).map(([key, val]) => val.desc),
+		});
+		Object.entries(extraOpts).forEach(([key, val]) => {
+			extras.includes(val.desc) && val.setup(directory, name);
+		});
 	}
 
 	console.log(`\nSuccessfully!`);
