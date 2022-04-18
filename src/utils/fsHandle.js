@@ -19,7 +19,7 @@ const _fs = {
 	dir: {
 		exist: (directory) => fs.existsSync(directory),
 		read: (directory) => fs.readdirSync(directory),
-		md: (directory, options = {}) => {
+		md: (directory, options = { recursive: true }) => {
 			fs.mkdirSync(directory, options);
 		},
 		rd: (directory, options = { recursive: true, force: true }) => {

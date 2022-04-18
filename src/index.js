@@ -9,6 +9,7 @@ const { cppDefault, dirPath } = require('./utils/default.js');
 const { _fs } = require('./utils/fsHandle.js');
 
 program
+	.option('-nf', `no folder inside`)
 	.option('-n <name>', `Folder's name`)
 	.option('-tp, <file>', 'Use custom template')
 	.option('-o, <option>', 'Gene with options')
@@ -19,6 +20,7 @@ program.parse();
 const cmdOpts = program.opts();
 
 let name = cmdOpts.n || '';
+let noFolderIn = cmdOpts.Nf || null;
 let genUseTp = cmdOpts.Tp || null;
 let genOpt = cmdOpts.o || '';
 let genFromTp = cmdOpts.t || '';
@@ -43,7 +45,6 @@ let genFinish = cmdOpts.y || 0;
 		const { rmFile } = await inquirer.prompt({
 			name: 'rmFile',
 			type: 'confirm',
-
 			message:
 				'Directory is not empty. Remove existing files and continue?',
 		});
@@ -52,6 +53,20 @@ let genFinish = cmdOpts.y || 0;
 		else process.exit(1);
 	}
 	if (!_fs.dir.exist(directory)) _fs.dir.md(directory);
+
+	// Confirm all files are in root folder
+	if (noFolderIn === null) {
+		noFolderIn = genFinish
+			? 1
+			: (
+					await inquirer.prompt({
+						name: 'noFolderIn',
+						type: 'confirm',
+						message: `Are all files in the root folder ?`,
+						default: false,
+					})
+			  ).noFolderIn;
+	}
 
 	// Config template
 	if (!genFromTp) {
@@ -82,7 +97,8 @@ let genFinish = cmdOpts.y || 0;
 		).genOpt;
 	}
 	Object.entries(genOpts).forEach(([key, val]) => {
-		(genOpt == key || val.desc === genOpt) && val.setup(directory, name);
+		(genOpt == key || val.desc === genOpt) &&
+			val.setup(directory, name, noFolderIn);
 	});
 
 	// Config gene use custom template

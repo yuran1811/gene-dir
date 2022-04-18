@@ -1,6 +1,6 @@
 {
 	"name": "gene-dir",
-	"version": "1.0.7",
+	"version": "1.0.9",
 	"description": "Auto Generate Directory Structure",
 	"main": "src/index.js",
 	"bin": "src/index.js",
