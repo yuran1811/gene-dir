@@ -15,11 +15,11 @@ const templates = {
 	fs: {
 		desc: 'folder structure',
 		name: 'fs',
-		initial: (directory, name) => {
+		initial: (directory, name, aio = 0) => {
 			updateFiles(directory, {
 				remove: [],
 				write: {
-					[`${name}.cpp`]: cppDefault(name),
+					[`${name}.cpp`]: cppDefault(name, aio),
 				},
 			});
 		},

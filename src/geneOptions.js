@@ -21,7 +21,7 @@ const geneOptions = {
 			const { inDir, outDir, testDir } = getDir(directory, aio);
 			makeDir({ inDir, outDir, testDir });
 
-			_fs.f.write(dirPath(directory, `sol.cpp`), cppDefault('sol'));
+			_fs.f.write(dirPath(directory, `sol.cpp`), cppDefault('sol', aio));
 
 			// in dir
 			_fs.f.write(dirPath(inDir, `${name}.INP`), defaultMes);
@@ -35,11 +35,11 @@ const geneOptions = {
 			// test dir
 			_fs.f.write(
 				dirPath(testDir, `brute.cpp`),
-				cppDefault('brute', { type: 'brute' })
+				cppDefault('brute', aio, { type: 'brute' })
 			);
 			_fs.f.write(
 				dirPath(testDir, `gen.cpp`),
-				cppDefault('gen', { type: 'gen' })
+				cppDefault('gen', aio, { type: 'gen' })
 			);
 		},
 	},
@@ -54,19 +54,14 @@ const geneOptions = {
 			_fs.f.write(dirPath(outDir, `${name}.OUT`), defaultMes);
 		},
 	},
-	m: {
-		name: 'm',
-		desc: 'Minimal (includes: "sol.cpp")',
-		setup: (directory, name) => {
-			_fs.f.write(dirPath(directory, `sol.cpp`), cppDefault('sol'));
-		},
-	},
 	ct: {
 		name: 'ct',
 		desc: 'File for testing (includes: "brute.cpp, gen.cpp")',
 		setup: (directory, name, aio = 0) => {
 			const { inDir, outDir, testDir } = getDir(directory, aio);
 			makeDir({ inDir, outDir, testDir });
+
+			_fs.f.write(dirPath(directory, `sol.cpp`), cppDefault('sol', aio));
 
 			// in , out
 			_fs.f.write(dirPath(inDir, `${name}.INP`), defaultMes);
@@ -75,11 +70,11 @@ const geneOptions = {
 			// test
 			_fs.f.write(
 				dirPath(testDir, `brute.cpp`),
-				cppDefault('brute', { type: 'brute' })
+				cppDefault('brute', aio, { type: 'brute' })
 			);
 			_fs.f.write(
 				dirPath(testDir, `gen.cpp`),
-				cppDefault('gen', { type: 'gen' })
+				cppDefault('gen', aio, { type: 'gen' })
 			);
 		},
 	},

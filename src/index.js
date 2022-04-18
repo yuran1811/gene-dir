@@ -57,7 +57,7 @@ let genFinish = cmdOpts.y || 0;
 	// Confirm all files are in root folder
 	if (noFolderIn === null) {
 		noFolderIn = genFinish
-			? 1
+			? 0
 			: (
 					await inquirer.prompt({
 						name: 'noFolderIn',
@@ -82,7 +82,7 @@ let genFinish = cmdOpts.y || 0;
 	const templateId = Object.entries(templates).find(
 		([key, val]) => genFromTp == key || val.desc === genFromTp
 	)[0];
-	templates[templateId].initial(directory, name);
+	templates[templateId].initial(directory, name, noFolderIn);
 
 	// Config gene options
 	if (!genOpt) {
@@ -115,7 +115,8 @@ let genFinish = cmdOpts.y || 0;
 	if (!!genUseTp) {
 		const tpDir = dirPath(process.cwd(), `${genUseTp}.cpp`);
 
-		if (!_fs.dir.exist(tpDir)) _fs.f.write(tpDir, cppDefault(genUseTp));
+		if (!_fs.dir.exist(tpDir))
+			_fs.f.write(tpDir, cppDefault(genUseTp, noFolderIn));
 
 		_fs.f.copy(tpDir, dirPath(process.cwd(), name, `${name}.cpp`));
 	}
@@ -129,7 +130,7 @@ let genFinish = cmdOpts.y || 0;
 			choices: Object.entries(extraOpts).map(([key, val]) => val.desc),
 		});
 		Object.entries(extraOpts).forEach(([key, val]) => {
-			extras.includes(val.desc) && val.setup(directory, name);
+			extras.includes(val.desc) && val.setup(directory, name, noFolderIn);
 		});
 	}
 
