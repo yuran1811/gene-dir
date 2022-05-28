@@ -4,10 +4,8 @@
 
 ### Basic Usage
 
-Use npm
-
 ```cmd
-npm start gene-dir
+node src gene-dir
 ```
 
 or .exe file (in release)
@@ -19,7 +17,7 @@ gd
 ### Advanced Usage
 
 ```cmd
-npm start gene-dir -o f -t fs -n folder_name -tp template_file_name -nf -y
+node src gene-dir -o f -t fs -n folder_name -tp template_file_name -nf -y
 ```
 
 or
