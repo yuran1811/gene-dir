@@ -1,5 +1,4 @@
 #! /usr/bin/env node
-
 const inquirer = require('inquirer');
 const { program } = require('commander');
 const templates = require('./templates');

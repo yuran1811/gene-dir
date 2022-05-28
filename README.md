@@ -4,14 +4,28 @@
 
 ### Basic Usage
 
+Use npm
+
 ```cmd
-npx gene-dir
+npm start gene-dir
+```
+
+or .exe file (in release)
+
+```cmd
+gd
 ```
 
 ### Advanced Usage
 
 ```cmd
-npx gene-dir -o f -t fs -n folder_name -tp template_file_name -nf -y
+npm start gene-dir -o f -t fs -n folder_name -tp template_file_name -nf -y
+```
+
+or
+
+```cmd
+gd -o f -t fs -n folder_name -tp template_file_name -nf -y
 ```
 
 -   -nf : no folder inside

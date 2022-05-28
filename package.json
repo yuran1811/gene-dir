@@ -1,6 +1,8 @@
 {
 	"name": "gene-dir",
-	"version": "1.1.15",
+	"version": "1.0.0",
+	"license": "MIT",
+	"author": "yuran1811",
 	"description": "Auto Generate Directory Structure",
 	"main": "src/index.js",
 	"bin": "src/index.js",
@@ -10,16 +12,9 @@
 	},
 	"scripts": {
 		"start": "node src",
-		"build": "pkg -o gd -t win -C GZip src/index.js",
-		"test": "echo \"No test specified\""
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/yuran1811/auto-gene-directory-structure.git"
+		"build": "pkg -o gd -t win -C GZip src/index.js"
 	},
 	"keywords": [
 		"cli"
-	],
-	"author": "yuran1811",
-	"license": "MIT"
+	]
 }
