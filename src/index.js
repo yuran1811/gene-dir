@@ -13,7 +13,7 @@ program
 	.option('-p, --path <path>', `Folder's directory`)
 	.option('-n, --name <name>', `Folder's name`)
 	.option('-tp, --custom-template <file>', 'Use custom template')
-	.option('-t, --template <template>', 'Gene with templates')
+	.option('-t, --template <template>', 'Gene use template')
 	.option('-o, --option <option>', 'Gene with options')
 	.showHelpAfterError('( Add --help for additional information )')
 	.parse();
