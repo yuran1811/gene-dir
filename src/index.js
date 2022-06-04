@@ -4,30 +4,48 @@ const { program } = require('commander');
 const templates = require('./templates');
 const genOpts = require('./geneOptions');
 const extraOpts = require('./extraOptions');
-const { cppDefault, dirPath } = require('./utils/default.js');
-const { _fs } = require('./utils/fsHandle.js');
+const { cppDefault, dirPath } = require('./utils/default');
+const { _fs } = require('./utils/fsHandle');
 
 program
-	.option('-nf', `no folder inside`)
-	.option('-n <name>', `Folder's name`)
-	.option('-tp, <file>', 'Use custom template')
-	.option('-o, <option>', 'Gene with options')
-	.option('-t, <template>', 'Gene with templates')
-	.option('-y', 'Finish');
-program.parse();
+	.option('-y', `No anything else`)
+	.option('-nf, --no-folder-inside', `No folder inside`)
+	.option('-p, --path <path>', `Folder's directory`)
+	.option('-n, --name <name>', `Folder's name`)
+	.option('-tp, --custom-template <file>', 'Use custom template')
+	.option('-t, --template <template>', 'Gene with templates')
+	.option('-o, --option <option>', 'Gene with options')
+	.showHelpAfterError('( Add --help for additional information )')
+	.parse();
 
 const cmdOpts = program.opts();
+const defaultPath = () => process.cwd();
 
-let name = cmdOpts.n || '';
-let noFolderIn = cmdOpts.Nf || null;
-let genUseTp = cmdOpts.Tp || null;
-let genOpt = cmdOpts.o || '';
-let genFromTp = cmdOpts.t || '';
+console.log(cmdOpts);
+
+let path = cmdOpts.path || null;
+let name = cmdOpts.name || null;
+let noFolderIn = !cmdOpts.folderInside || null;
+let genUseTp = cmdOpts.customTemplate || null;
+let genOpt = cmdOpts.option || null;
+let genFromTp = cmdOpts.template || null;
 let genFinish = cmdOpts.y || 0;
 
 (async () => {
-	// Config folder's name
-	if (!name) {
+	// Config path & folder's name
+	if (path == null) {
+		path = genFinish
+			? defaultPath()
+			: (
+					await inquirer.prompt({
+						name: 'path',
+						type: 'input',
+						message: `Folder's directory`,
+						default: defaultPath(),
+					})
+			  ).path;
+	}
+	if (name == null) {
 		name = (
 			await inquirer.prompt({
 				name: 'name',
@@ -37,9 +55,7 @@ let genFinish = cmdOpts.y || 0;
 			})
 		).name;
 	}
-
-	const directory = dirPath(process.cwd(), name);
-
+	const directory = dirPath(path, name);
 	if (_fs.dir.exist(directory) && _fs.dir.read(directory).length > 0) {
 		const { rmFile } = await inquirer.prompt({
 			name: 'rmFile',
@@ -68,7 +84,7 @@ let genFinish = cmdOpts.y || 0;
 	}
 
 	// Config template
-	if (!genFromTp) {
+	if (genFromTp == null) {
 		genFromTp = (
 			await inquirer.prompt({
 				name: 'genFromTp',
@@ -84,7 +100,7 @@ let genFinish = cmdOpts.y || 0;
 	templates[templateId].initial(directory, name, noFolderIn);
 
 	// Config gene options
-	if (!genOpt) {
+	if (genOpt == null) {
 		genOpt = (
 			await inquirer.prompt({
 				name: 'genOpt',
@@ -95,29 +111,28 @@ let genFinish = cmdOpts.y || 0;
 			})
 		).genOpt;
 	}
-	Object.entries(genOpts).forEach(([key, val]) => {
-		(genOpt == key || val.desc === genOpt) &&
-			val.setup(directory, name, noFolderIn);
-	});
+	for (const key in genOpts)
+		(key == genOpt || genOpts[key].desc === genOpt) &&
+			genOpts[key].setup(directory, name, noFolderIn);
 
 	// Config gene use custom template
 	if (genUseTp === null) {
-		genUseTp = (
-			await inquirer.prompt({
-				name: 'genUseTp',
-				type: 'input',
-				message: 'Gene from custom template ?',
-			})
-		).genUseTp;
+		genUseTp = genFinish
+			? ''
+			: (
+					await inquirer.prompt({
+						name: 'genUseTp',
+						type: 'input',
+						message: 'Gene from custom template ?',
+					})
+			  ).genUseTp;
 	}
-
 	if (!!genUseTp) {
-		const tpDir = dirPath(process.cwd(), `${genUseTp}.cpp`);
+		const tpDir = dirPath(path, `${genUseTp}.cpp`);
 
 		if (!_fs.dir.exist(tpDir))
 			_fs.f.write(tpDir, cppDefault(genUseTp, noFolderIn));
-
-		_fs.f.copy(tpDir, dirPath(process.cwd(), name, `${name}.cpp`));
+		_fs.f.copy(tpDir, dirPath(path, name, `${name}.cpp`));
 	}
 
 	// Extra Options
@@ -133,5 +148,18 @@ let genFinish = cmdOpts.y || 0;
 		});
 	}
 
-	console.log(`\nSuccessfully!`);
+	// End Process
+	console.log(`\nAll things done!`);
 })();
+
+/**** Helpful Inquirer Plugins
+	- autocomplete
+	- inquirer-fuzzy-path
+	- inquirer-search-checkbox
+	- inquirer-search-list
+	- inquirer-tree-prompt
+
+	* Test commands
+	node src --path C:\\Users\\Admin\\Desktop\\test --name test_1 --template fs --option f -y
+	node src -p C:\\Users\\Admin\\Desktop\\test -n test_1 -tp tplate -t fs -o f -y
+****/

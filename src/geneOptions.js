@@ -8,9 +8,7 @@ const getDir = (directory, aio) => ({
 });
 
 const makeDir = (dir) => {
-	Object.entries(dir).forEach(([key, val]) => {
-		_fs.dir.md(val);
-	});
+	for (const key in dir) _fs.dir.md(dir[key]);
 };
 
 const geneOptions = {

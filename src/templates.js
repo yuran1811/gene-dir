@@ -1,14 +1,12 @@
-const { cppDefault, dirPath } = require('./utils/default.js');
-const { _fs } = require('./utils/fsHandle.js');
+const { cppDefault, dirPath } = require('./utils/default');
+const { _fs } = require('./utils/fsHandle');
 
 const updateFiles = (directory, files) => {
-	files.remove.forEach((file) => {
-		_fs.f.rm(dirPath(directory, file));
-	});
-
-	Object.entries(files.write).forEach(([key, value]) => {
-		_fs.f.write(dirPath(directory, key), value, { encoding: 'utf-8' });
-	});
+	files.remove.forEach((file) => _fs.f.rm(dirPath(directory, file)));
+	for (const key in files.write)
+		_fs.f.write(dirPath(directory, key), files.write[key], {
+			encoding: 'utf-8',
+		});
 };
 
 const templates = {
