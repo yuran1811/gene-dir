@@ -76,7 +76,7 @@ node src [options]
                                     -   ct : File for testing (includes: "brute.cpp, gen.cpp")
 ```
 
-## Developing
+## Development
 
 Follow these steps to set up the project locally on your machine.
 
